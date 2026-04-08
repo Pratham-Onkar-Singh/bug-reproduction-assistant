@@ -16,7 +16,7 @@ import socketserver
 
 API_BASE_URL = os.getenv("API_BASE_URL")
 MODEL_NAME = os.getenv("MODEL_NAME")
-API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
+API_KEY = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
 
 if not API_BASE_URL or not MODEL_NAME or not API_KEY:
     raise ValueError(

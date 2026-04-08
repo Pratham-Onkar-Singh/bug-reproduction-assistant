@@ -210,17 +210,25 @@ The root-level `inference.py`:
 Required environment variables:
 
 ```
-API_BASE_URL
-MODEL_NAME
-HF_TOKEN
+API_BASE_URL           # LLM API endpoint
+MODEL_NAME             # Model identifier
+OPENAI_API_KEY         # OpenAI API key (or HF_TOKEN as fallback)
 ```
 
-Example:
+Example with OpenAI:
 
+```bash
+export API_BASE_URL="https://api.openai.com/v1"
+export MODEL_NAME="gpt-4-turbo"
+export OPENAI_API_KEY="sk-..."
 ```
-API_BASE_URL=https://router.huggingface.co/v1
-MODEL_NAME=openai/gpt-oss-120b:groq
-HF_TOKEN=hf_xxxxx
+
+Example with HuggingFace:
+
+```bash
+export API_BASE_URL="https://api-inference.huggingface.co/v1"
+export MODEL_NAME="meta-llama/Meta-Llama-3.1-8B-Instruct"
+export HF_TOKEN="hf_..."
 ```
 
 ---
@@ -228,10 +236,11 @@ HF_TOKEN=hf_xxxxx
 # Example Output
 
 ```
-[START] task=easy
-[STEP] step=1 action=change_parameter reward=0.10 done=False
-[STEP] step=2 action=run_step reward=0.70 done=False
-[END] task=easy score=1.0
+[START] task=easy env=bug_reproduction model=gpt-4-turbo
+[STEP] step=1 action={'action_type': 'change_parameter', 'parameter': 'file_size', 'value': '100MB'} reward=0.10 done=false error=null
+[STEP] step=2 action={'action_type': 'run_step', 'step': 'open_upload_page'} reward=0.20 done=false error=null
+[STEP] step=3 action={'action_type': 'run_step', 'step': 'upload_file'} reward=0.70 done=true error=null
+[END] success=true steps=3 score=1.000 rewards=0.10,0.20,0.70
 ```
 
 ---
@@ -280,14 +289,21 @@ The Space runs the baseline and exposes a lightweight HTTP server for health che
 
 ```
 .
-├── env.py
-├── tasks.py
-├── models.py
-├── grader.py
-├── inference.py
-├── openenv.yaml
-├── Dockerfile
-├── requirements.txt
+├── server/
+│   ├── app.py              # FastAPI server
+│   ├── env.py              # BugReproEnv class
+│   ├── models.py           # Pydantic models (Observation, Action, Reward)
+│   ├── tasks.py            # Task definitions
+│   └── grader.py           # Grading functions
+├── tests/
+│   ├── test_graders.py     # Unit tests (27 tests, all passing)
+│   └── __init__.py
+├── inference.py            # Baseline inference script
+├── openenv.yaml            # OpenEnv specification
+├── Dockerfile              # Container configuration
+├── requirements.txt        # Python dependencies
+├── .env.example            # Environment variables template
+├── pytest.ini              # Pytest configuration
 └── README.md
 ```
 
