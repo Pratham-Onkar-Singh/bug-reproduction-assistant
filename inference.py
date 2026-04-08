@@ -55,8 +55,8 @@ def log_end(success, steps, score, rewards):
 
 def heuristic_action(env, obs):
     state = env.state()
-    steps = state["steps_taken"]
-    params = state["parameters"]
+    steps = state.steps_taken
+    params = state.parameters
     difficulty = env.difficulty
 
     # EASY TASK
@@ -128,8 +128,17 @@ def heuristic_action(env, obs):
 
 
 def run_task(difficulty, grader):
-    env = BugReproEnv(difficulty)
-    obs = env.reset()
+    try:
+        env = BugReproEnv(difficulty)
+    except Exception as e:
+        print(f"[ERROR] Failed to initialize environment: {str(e)}", flush=True)
+        raise
+    
+    try:
+        obs = env.reset()
+    except Exception as e:
+        print(f"[ERROR] Failed to reset environment: {str(e)}", flush=True)
+        raise
 
     log_start(difficulty)
 
@@ -210,7 +219,7 @@ Format:
             if not obs.crash_triggered:
                 if "open_upload_page" not in obs.steps_taken:
                     action_dict = {"action_type": "run_step", "step": "open_upload_page"}
-                elif "file_size" not in env.state()["parameters"]:
+                elif "file_size" not in env.state().parameters:
                     action_dict = {
                         "action_type": "change_parameter",
                         "parameter": "file_size",
@@ -221,9 +230,19 @@ Format:
             else:
                 action_dict = {"action_type": "confirm_bug"}
 
-        action = Action(**action_dict)
+        try:
+            action = Action(**action_dict)
+        except Exception as e:
+            print(f"[ERROR] Failed to create Action: {str(e)}", flush=True)
+            error_msg = str(e)
+            action_dict = {"action_type": "confirm_bug"}
+            action = Action(**action_dict)
 
-        obs, reward, done, _ = env.step(action)
+        try:
+            obs, reward, done, _ = env.step(action)
+        except Exception as e:
+            print(f"[ERROR] Failed to execute step: {str(e)}", flush=True)
+            raise
 
         rewards.append(reward.score)
 
@@ -235,8 +254,18 @@ Format:
             error_msg
         )
 
-    state = env.state()
-    score = grader(state)
+    try:
+        state = env.state()
+    except Exception as e:
+        print(f"[ERROR] Failed to get environment state: {str(e)}", flush=True)
+        raise
+    
+    try:
+        score = grader(state)
+    except Exception as e:
+        print(f"[ERROR] Failed to grade task: {str(e)}", flush=True)
+        raise
+    
     success = score >= 0.5
 
     log_end(success, step_count, score, rewards)
@@ -244,16 +273,24 @@ Format:
 
 
 def main():
+    try:
+        scores = {}
 
-    scores = {}
-
-    scores["easy"] = run_task("easy", grade_easy)
-    scores["medium"] = run_task("medium", grade_medium)
-    scores["hard"] = run_task("hard", grade_hard)
+        scores["easy"] = run_task("easy", grade_easy)
+        scores["medium"] = run_task("medium", grade_medium)
+        scores["hard"] = run_task("hard", grade_hard)
+    except Exception as e:
+        print(f"[FATAL] Inference failed: {str(e)}", flush=True)
+        raise
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"[FATAL] Main execution failed: {str(e)}", flush=True)
+        exit(1)
+    
     print("Finished baseline run. Starting keep-alive server...")
 
     PORT = 7860
