@@ -26,6 +26,31 @@ client = OpenAI(
     api_key=HF_TOKEN
 )
 
+# ---------- NEW: STRICT LOG HELPERS ----------
+
+def log_start(task):
+    print(f"[START] task={task} env=bug_reproduction model={MODEL_NAME}", flush=True)
+
+
+def log_step(step, action, reward, done, error=None):
+    error_val = error if error else "null"
+    done_val = str(done).lower()
+    print(
+        f"[STEP] step={step} action={action} reward={reward:.2f} "
+        f"done={done_val} error={error_val}",
+        flush=True
+    )
+
+
+def log_end(success, steps, score, rewards):
+    rewards_str = ",".join(f"{r:.2f}" for r in rewards)
+    print(
+        f"[END] success={str(success).lower()} "
+        f"steps={steps} score={score:.2f} rewards={rewards_str}",
+        flush=True
+    )
+
+
 def heuristic_action(env, obs):
     state = env.state()
     steps = state["steps_taken"]
@@ -104,13 +129,15 @@ def run_task(difficulty, grader):
     env = BugReproEnv(difficulty)
     obs = env.reset()
 
-    print(f"[START] task={difficulty}")
+    log_start(difficulty)
 
     step_count = 0
     done = False
+    rewards = []
 
     while not done:
         step_count += 1
+        error_msg = None
 
         prompt = f"""
 You are a QA engineer reproducing a software bug.
@@ -165,22 +192,18 @@ Format:
             text = response.choices[0].message.content
             parsed = json.loads(text)
 
-            # Handle if LLM returns a list instead of dict
             if isinstance(parsed, list):
                 parsed = parsed[0]
 
-            # Validate it's a dict
             if isinstance(parsed, dict):
                 action_dict = parsed
-                # Ensure all expected keys exist
                 action_dict["step"] = action_dict.get("step") or None
                 action_dict["parameter"] = action_dict.get("parameter") or None
                 action_dict["value"] = action_dict.get("value") or None
 
-        except Exception:
-            pass
+        except Exception as e:
+            error_msg = str(e)
 
-        # If LLM failed, use fallback heuristic
         if action_dict is None:
             if not obs.crash_triggered:
                 if "open_upload_page" not in obs.steps_taken:
@@ -200,16 +223,21 @@ Format:
 
         obs, reward, done, _ = env.step(action)
 
-        print(
-            f"[STEP] step={step_count} action={action_dict} "
-            f"reward={reward.score:.2f} done={done}",
-            flush=True
+        rewards.append(reward.score)
+
+        log_step(
+            step_count,
+            action_dict,
+            reward.score,
+            done,
+            error_msg
         )
 
     state = env.state()
     score = grader(state)
+    success = score >= 0.5
 
-    print(f"[END] task={difficulty} score={score}")
+    log_end(success, step_count, score, rewards)
     return score
 
 
@@ -220,8 +248,6 @@ def main():
     scores["easy"] = run_task("easy", grade_easy)
     scores["medium"] = run_task("medium", grade_medium)
     scores["hard"] = run_task("hard", grade_hard)
-
-    print("Final Scores:", scores)
 
 
 if __name__ == "__main__":
