@@ -1,3 +1,12 @@
+---
+title: Bug Reproduction Assistant
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
+
 # Bug Reproduction Assistant (OpenEnv)
 
 ## Overview
