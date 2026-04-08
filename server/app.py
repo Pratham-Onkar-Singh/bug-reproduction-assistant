@@ -7,6 +7,15 @@ from server.models import Action
 app = FastAPI()
 env = BugReproEnv("easy")
 
+@app.get("/")
+async def root():
+    return {"message": "Bug Resproduction Assistant is running", "status": "200"}
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 
 @app.post("/reset")
 def reset():
