@@ -13,10 +13,6 @@ def grade_easy(state: Dict) -> float:
     if state["parameters"].get("file_size") == "100MB":
         score += 0.2
 
-    # removing efficiency based reqarding for deterministic scores/rewards
-    # efficiency = max(0, 1 - state["step_count"] / 6)
-    # score += 0.1 * efficiency
-
     return round(score, 3)
 
 

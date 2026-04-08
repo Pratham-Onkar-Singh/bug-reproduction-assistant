@@ -103,8 +103,7 @@ Install dependencies:
 ```
 pip install -r requirements.txt
 ```
-
-Set environment variables:
+The following environment variables must be set:
 
 ```
 API_BASE_URL=...
@@ -112,7 +111,18 @@ MODEL_NAME=...
 HF_TOKEN=...
 ```
 
+* API_BASE_URL - Base URL for LLM provider
+* MODEL_NAME   - Model identifier
+* HF_TOKEN     - API key for inference
+
+
+These should be configured in Hugging Face Space secrets.
+
 ---
+
+## Environment Variables
+
+
 
 ## Running Baseline
 

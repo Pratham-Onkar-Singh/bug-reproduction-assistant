@@ -20,17 +20,3 @@ class Action(BaseModel):
 class Reward(BaseModel):
     score: float
     reason: Optional[str] = None
-
-
-# testing pydantic models:
-# obs = Observation(
-#     bug_id="BUG-001",
-#     description="Crash on upload",
-#     last_message="waiting",
-#     crash_triggered=False,
-#     steps_taken=[],
-#     remaining_steps=5,
-#     done=False
-# )
-
-# print(obs.model_dump_json())
