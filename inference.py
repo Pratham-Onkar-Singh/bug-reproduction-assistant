@@ -296,6 +296,14 @@ if __name__ == "__main__":
     PORT = 7860
     Handler = http.server.SimpleHTTPRequestHandler
 
-    with socketserver.TCPServer(("0.0.0.0", PORT), Handler) as httpd:
-        print(f"Serving at port {PORT}")
-        httpd.serve_forever()
+    try:
+        socketserver.TCPServer.allow_reuse_address = True
+        with socketserver.TCPServer(("0.0.0.0", PORT), Handler) as httpd:
+            print(f"Serving at port {PORT}", flush=True)
+            httpd.serve_forever()
+    except OSError as e:
+        print(f"[WARNING] Failed to start server on port {PORT}: {str(e)}", flush=True)
+        exit(0)
+    except Exception as e:
+        print(f"[ERROR] Server error: {str(e)}", flush=True)
+        exit(1)
