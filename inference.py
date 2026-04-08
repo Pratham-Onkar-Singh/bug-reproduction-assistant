@@ -9,7 +9,7 @@ from models import Action
 from grader import grade_easy, grade_medium, grade_hard
 
 import json
-
+import time
 
 API_BASE_URL = os.getenv("API_BASE_URL")
 MODEL_NAME = os.getenv("MODEL_NAME")
@@ -168,3 +168,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    print("Finished baseline run.")
+    while True:
+        time.sleep(3600)

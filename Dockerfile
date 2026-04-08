@@ -9,4 +9,4 @@ COPY . .
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "inference.py"]
+CMD ["python", "-u", "inference.py"]
