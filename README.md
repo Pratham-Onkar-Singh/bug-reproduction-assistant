@@ -218,7 +218,7 @@ HF_TOKEN               # Hugging Face API key (or OPENAI_API_KEY as fallback)
 Example with HuggingFace:
 
 ```bash
-export API_BASE_URL="https://api-inference.huggingface.co/v1"
+export API_BASE_URL="https://router.huggingface.co/v1"
 export MODEL_NAME="meta-llama/Meta-Llama-3.1-8B-Instruct"
 export HF_TOKEN="hf_..."
 ```
@@ -227,7 +227,7 @@ Example with OpenAI:
 
 ```bash
 export API_BASE_URL="https://api.openai.com/v1"
-export MODEL_NAME="gpt-4-turbo"
+export MODEL_NAME="gpt-4o"
 export OPENAI_API_KEY="sk-..."
 ```
 
@@ -236,7 +236,7 @@ export OPENAI_API_KEY="sk-..."
 # Example Output
 
 ```
-[START] task=easy env=bug_reproduction model=gpt-4-turbo
+[START] task=easy env=bug_reproduction model=gpt-4o
 [STEP] step=1 action={'action_type': 'change_parameter', 'parameter': 'file_size', 'value': '100MB'} reward=0.10 done=false error=null
 [STEP] step=2 action={'action_type': 'run_step', 'step': 'open_upload_page'} reward=0.20 done=false error=null
 [STEP] step=3 action={'action_type': 'run_step', 'step': 'upload_file'} reward=0.70 done=true error=null
