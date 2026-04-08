@@ -1,6 +1,6 @@
 from typing import Tuple, Dict, Any
-from models import Observation, Action, Reward
-from tasks import TASKS
+from server.models import Observation, Action, Reward
+from server.tasks import TASKS
 
 class BugReproEnv:
 

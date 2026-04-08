@@ -1,8 +1,17 @@
 [project]
 name = "bug-reproduction-assistant"
 version = "0.1.0"
-description = "OpenEnv bug reproduction environment"
+description = "OpenEnv bug reproduction assistant"
 requires-python = ">=3.9"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "openenv-core>=0.2.0"
+]
+
+[project.scripts]
+server = "server.app:app"
 
 [tool.openenv]
-entry_point = "env:BugReproEnv"
+entry_point = "server.env:BugReproEnv"

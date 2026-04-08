@@ -1,15 +1,15 @@
 from fastapi import FastAPI
-from env import BugReproEnv
-from models import Action
+from server.env import BugReproEnv
+from server.models import Action
 
 app = FastAPI()
+
 env = BugReproEnv("easy")
 
 
 @app.post("/reset")
 def reset():
-    obs = env.reset()
-    return obs
+    return env.reset()
 
 
 @app.post("/step")
@@ -19,7 +19,7 @@ def step(action: Action):
         "observation": obs,
         "reward": reward,
         "done": done,
-        "info": info
+        "info": info,
     }
 
 

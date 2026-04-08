@@ -4,9 +4,9 @@ load_dotenv()
 import os
 from openai import OpenAI
 
-from env import BugReproEnv
-from models import Action
-from grader import grade_easy, grade_medium, grade_hard
+from server.env import BugReproEnv
+from server.models import Action
+from server.grader import grade_easy, grade_medium, grade_hard
 
 import json
 import time
