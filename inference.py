@@ -11,6 +11,9 @@ from grader import grade_easy, grade_medium, grade_hard
 import json
 import time
 
+import http.server
+import socketserver
+
 API_BASE_URL = os.getenv("API_BASE_URL")
 MODEL_NAME = os.getenv("MODEL_NAME")
 HF_TOKEN = os.getenv("HF_TOKEN")
@@ -168,6 +171,11 @@ def main():
 
 if __name__ == "__main__":
     main()
-    print("Finished baseline run.")
-    while True:
-        time.sleep(3600)
+    print("Finished baseline run. Starting keep-alive server...")
+
+    PORT = 7860
+    Handler = http.server.SimpleHTTPRequestHandler
+
+    with socketserver.TCPServer(("0.0.0.0", PORT), Handler) as httpd:
+        print(f"Serving at port {PORT}")
+        httpd.serve_forever()
