@@ -27,21 +27,76 @@ client = OpenAI(
 )
 
 def heuristic_action(env, obs):
-    state_steps = obs.steps_taken
+    state = env.state()
+    steps = state["steps_taken"]
+    params = state["parameters"]
+    difficulty = env.difficulty
 
-    if not obs.crash_triggered:
-        if "login" not in state_steps:
-            return {"action_type": "run_step", "step": "login"}
-        if "set_role_admin" not in state_steps:
-            return {"action_type": "run_step", "step": "set_role_admin"}
-        if "file_size" not in env.state()["parameters"]:
+    # EASY TASK
+    if difficulty == "easy":
+        if "file_size" not in params:
             return {
                 "action_type": "change_parameter",
                 "parameter": "file_size",
                 "value": "100MB"
             }
-        return {"action_type": "run_step", "step": "upload_file"}
-    else:
+
+        if "open_upload_page" not in steps:
+            return {"action_type": "run_step", "step": "open_upload_page"}
+
+        if not obs.crash_triggered:
+            return {"action_type": "run_step", "step": "upload_file"}
+
+        return {"action_type": "confirm_bug"}
+
+    # MEDIUM TASK
+    if difficulty == "medium":
+        if "login" not in steps:
+            return {"action_type": "run_step", "step": "login"}
+
+        if "file_size" not in params:
+            return {
+                "action_type": "change_parameter",
+                "parameter": "file_size",
+                "value": "100MB"
+            }
+
+        if "open_upload_page" not in steps:
+            return {"action_type": "run_step", "step": "open_upload_page"}
+
+        if not obs.crash_triggered:
+            return {"action_type": "run_step", "step": "upload_file"}
+
+        return {"action_type": "confirm_bug"}
+
+    # HARD TASK
+    if difficulty == "hard":
+        if "login" not in steps:
+            return {"action_type": "run_step", "step": "login"}
+
+        if "set_role_admin" not in steps:
+            return {"action_type": "run_step", "step": "set_role_admin"}
+
+        if "file_type" not in params:
+            return {
+                "action_type": "change_parameter",
+                "parameter": "file_type",
+                "value": "csv"
+            }
+
+        if "file_size" not in params:
+            return {
+                "action_type": "change_parameter",
+                "parameter": "file_size",
+                "value": "100MB"
+            }
+
+        if "open_upload_page" not in steps:
+            return {"action_type": "run_step", "step": "open_upload_page"}
+
+        if not obs.crash_triggered:
+            return {"action_type": "run_step", "step": "upload_file"}
+
         return {"action_type": "confirm_bug"}
 
 

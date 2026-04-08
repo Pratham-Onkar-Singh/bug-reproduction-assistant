@@ -15,6 +15,10 @@ This project implements a real-world QA bug reproduction environment where an AI
 
 The environment follows the OpenEnv specification and provides multiple tasks with deterministic grading.
 
+
+### LIVE Hugging Face link: 
+https://huggingface.co/spaces/CodeArtisan09/bug-reproduction-assistant
+
 ---
 
 ## Real-World Motivation
