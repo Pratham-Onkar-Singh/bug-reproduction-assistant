@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 
 
 class Observation(BaseModel):
@@ -20,3 +20,20 @@ class Action(BaseModel):
 class Reward(BaseModel):
     score: float
     reason: Optional[str] = None
+
+class EnvironmentState(BaseModel):
+    """Full internal environment state for debugging"""
+    bug: Dict[str, Any]
+    steps_taken: List[str]
+    parameters: Dict[str, Any]
+    crash_triggered: bool
+    step_count: int
+    done: bool
+
+class TaskGrade(BaseModel):
+    """Final episode grade"""
+    task_id: str
+    score: float
+    success: bool
+    steps_taken: int
+    progress_ratio: float

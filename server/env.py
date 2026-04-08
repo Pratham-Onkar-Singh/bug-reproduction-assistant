@@ -1,19 +1,29 @@
 from typing import Tuple, Dict, Any
-from server.models import Observation, Action, Reward
+from server.models import Observation, Action, Reward, EnvironmentState, TaskGrade
 from server.tasks import TASKS
+from server.grader import grade_easy, grade_medium, grade_hard
 
 class BugReproEnv:
 
-    def __init__(self, difficulty="easy"):
+    def __init__(self, task_id: str = "easy"):
         self.max_steps = 6
-        self.difficulty = difficulty
+        self.task_id = task_id
+        self.graders = {
+            "easy": grade_easy,
+            "medium": grade_medium,
+            "hard": grade_hard,
+        }
         self.reset()
 
-    def reset(self) -> Observation:
+    def reset(self, task_id: str = None, seed: int = None) -> Observation:
         """Start a new episode"""
-
-        self.bug = TASKS[self.difficulty]
-
+        if task_id is not None:
+            self.task_id = task_id
+        
+        if self.task_id not in TASKS:
+            raise ValueError(f"Unknown task_id: {self.task_id}")
+        
+        self.bug = TASKS[self.task_id]
         self.steps_taken = []
         self.parameters = {}
         self.crash_triggered = False
@@ -75,9 +85,21 @@ class BugReproEnv:
         observation = self._get_observation(message)
         return observation, Reward(score=reward, reason=message), self.done, {}
 
-    def state(self) -> Dict[str, Any]:
+    def state(self) -> EnvironmentState:
         """Return internal state"""
-        return {
+        return EnvironmentState(
+            bug=self.bug,
+            steps_taken=self.steps_taken,
+            parameters=self.parameters,
+            crash_triggered=self.crash_triggered,
+            step_count=self.step_count,
+            done=self.done
+        )
+
+    def grade(self) -> TaskGrade:
+        """Grade the current episode"""
+        grader = self.graders[self.task_id]
+        state_dict = {
             "bug": self.bug,
             "steps_taken": self.steps_taken,
             "parameters": self.parameters,
@@ -85,6 +107,15 @@ class BugReproEnv:
             "step_count": self.step_count,
             "done": self.done
         }
+        score = grader(state_dict)
+        progress = min(1.0, len(self.steps_taken) / len(self.bug["correct_steps"])) 
+        return TaskGrade(
+            task_id=self.task_id,
+            score=score,
+            success=score >= 0.75,
+            steps_taken=self.step_count,
+            progress_ratio=progress
+        )
 
     def _get_observation(self, message: str) -> Observation:
         """Build observation"""

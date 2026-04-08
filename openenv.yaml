@@ -5,7 +5,7 @@ description: |
   attempts to reproduce software bugs by executing steps, adjusting
   parameters, and confirming crash behavior.
 
-entry_point: env:BugReproEnv
+entry_point: server.env:BugReproEnv
 
 tasks:
   - id: easy

@@ -198,6 +198,64 @@ All graders return:
 
 ---
 
+# HTTP API
+
+The FastAPI server exposes the following endpoints:
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Server status |
+| `/health` | GET | Health check |
+| `/reset` | POST | Reset environment (accepts task_id, seed) |
+| `/step` | POST | Execute action |
+| `/state` | GET | Current environment state |
+| `/tasks` | GET | List tasks and all schemas |
+| `/grader` | GET | Final episode grade |
+| `/baseline` | POST | Run baseline inference script |
+
+---
+
+# Python Client
+
+Use the provided `client.py` for type-safe API access:
+
+```python
+from client import BugReproClient
+
+# Local development
+client = BugReproClient("http://localhost:7860")
+
+# Or production (HF Space)
+# client = BugReproClient("https://codeartisan09-bug-reproduction-assistant.hf.space")
+
+# Reset to a task
+obs = client.reset(task_id="easy")
+
+# Execute action
+action = {
+    "action_type": "change_parameter",
+    "parameter": "file_size",
+    "value": "100MB"
+}
+result = client.step(action)
+print(f"Reward: {result['reward']['score']}")
+
+# Get current state
+state = client.state()
+
+# Get task list and schemas
+tasks = client.get_tasks()
+
+# Grade episode
+grade = client.get_grader()
+print(f"Score: {grade['score']}, Success: {grade['success']}")
+
+# Run baseline
+results = client.run_baseline()
+```
+
+---
+
 # Baseline Inference
 
 The root-level `inference.py`:
@@ -277,11 +335,15 @@ docker run bug-reproduction
 
 # Hugging Face Space
 
-Live runtime:
+Live deployment:
 
 https://huggingface.co/spaces/CodeArtisan09/bug-reproduction-assistant
 
-The Space runs the baseline and exposes a lightweight HTTP server for health checks.
+Runtime URL (for direct API access):
+
+https://codeartisan09-bug-reproduction-assistant.hf.space
+
+The Space runs the baseline and exposes a lightweight HTTP server for health checks and API endpoints.
 
 ---
 
@@ -290,14 +352,18 @@ The Space runs the baseline and exposes a lightweight HTTP server for health che
 ```
 .
 ├── server/
-│   ├── app.py              # FastAPI server
+│   ├── app.py              # FastAPI server with all endpoints
 │   ├── env.py              # BugReproEnv class
-│   ├── models.py           # Pydantic models (Observation, Action, Reward)
+│   ├── models.py           # Pydantic models (Observation, Action, Reward, EnvironmentState, TaskGrade)
 │   ├── tasks.py            # Task definitions
 │   └── grader.py           # Grading functions
+├── scripts/
+│   ├── baseline.py         # Baseline inference runner
+│   └── __init__.py
 ├── tests/
 │   ├── test_graders.py     # Unit tests (27 tests, all passing)
 │   └── __init__.py
+├── client.py               # Standard client for the environment
 ├── inference.py            # Baseline inference script
 ├── openenv.yaml            # OpenEnv specification
 ├── Dockerfile              # Container configuration
