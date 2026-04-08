@@ -212,15 +212,7 @@ Required environment variables:
 ```
 API_BASE_URL           # LLM API endpoint
 MODEL_NAME             # Model identifier
-OPENAI_API_KEY         # OpenAI API key (or HF_TOKEN as fallback)
-```
-
-Example with OpenAI:
-
-```bash
-export API_BASE_URL="https://api.openai.com/v1"
-export MODEL_NAME="gpt-4-turbo"
-export OPENAI_API_KEY="sk-..."
+HF_TOKEN               # Hugging Face API key (or OPENAI_API_KEY as fallback)
 ```
 
 Example with HuggingFace:
@@ -229,6 +221,14 @@ Example with HuggingFace:
 export API_BASE_URL="https://api-inference.huggingface.co/v1"
 export MODEL_NAME="meta-llama/Meta-Llama-3.1-8B-Instruct"
 export HF_TOKEN="hf_..."
+```
+
+Example with OpenAI:
+
+```bash
+export API_BASE_URL="https://api.openai.com/v1"
+export MODEL_NAME="gpt-4-turbo"
+export OPENAI_API_KEY="sk-..."
 ```
 
 ---
