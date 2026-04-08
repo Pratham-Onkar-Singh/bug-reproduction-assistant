@@ -16,17 +16,18 @@ import socketserver
 
 API_BASE_URL = os.getenv("API_BASE_URL")
 MODEL_NAME = os.getenv("MODEL_NAME")
-HF_TOKEN = os.getenv("HF_TOKEN")
+API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
 
-if not API_BASE_URL or not MODEL_NAME or not HF_TOKEN:
-    raise ValueError("Missing environment variables. Check .env file.")
+if not API_BASE_URL or not MODEL_NAME or not API_KEY:
+    raise ValueError(
+        "Missing environment variables. Set: "
+        "API_BASE_URL, MODEL_NAME, and either OPENAI_API_KEY or HF_TOKEN"
+    )
 
 client = OpenAI(
     base_url=API_BASE_URL,
-    api_key=HF_TOKEN
+    api_key=API_KEY
 )
-
-# ---------- NEW: STRICT LOG HELPERS ----------
 
 def log_start(task):
     print(f"[START] task={task} env=bug_reproduction model={MODEL_NAME}", flush=True)

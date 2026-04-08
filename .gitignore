@@ -31,7 +31,12 @@ docker-compose.override.yml
 
 # Testing
 .pytest_cache/
+.mypy_cache/
+.coverage
 
 # Misc
 *.swp
 *.swo
+
+# temp files
+REQUIREMENTS_CHECKLIST.md
