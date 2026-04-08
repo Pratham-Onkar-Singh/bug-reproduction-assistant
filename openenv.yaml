@@ -1,0 +1,74 @@
+name: bug-reproduction-assistant
+
+description: |
+  A real-world QA bug reproduction environment where an AI agent
+  attempts to reproduce software bugs by executing steps, adjusting
+  parameters, and confirming crash behavior.
+
+entry_point: env:BugReproEnv
+
+tasks:
+  - id: easy
+    description: Reproduce a simple file upload crash
+    difficulty: easy
+
+  - id: medium
+    description: Reproduce crash requiring login and file type
+    difficulty: medium
+
+  - id: hard
+    description: Reproduce crash requiring role, login, and parameters
+    difficulty: hard
+
+action_space:
+  type: object
+  properties:
+    action_type:
+      type: string
+      enum:
+        - run_step
+        - change_parameter
+        - confirm_bug
+        - request_info
+
+    step:
+      type: string
+      nullable: true
+
+    parameter:
+      type: string
+      nullable: true
+
+    value:
+      type: string
+      nullable: true
+
+observation_space:
+  type: object
+  properties:
+    bug_id:
+      type: string
+
+    description:
+      type: string
+
+    last_message:
+      type: string
+
+    crash_triggered:
+      type: boolean
+
+    steps_taken:
+      type: array
+      items:
+        type: string
+
+    remaining_steps:
+      type: integer
+
+    done:
+      type: boolean
+
+reward:
+  type: float
+  range: [0.0, 1.0]
