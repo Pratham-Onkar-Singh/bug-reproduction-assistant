@@ -1,0 +1,8 @@
+[project]
+name = "bug-reproduction-assistant"
+version = "0.1.0"
+description = "OpenEnv bug reproduction environment"
+requires-python = ">=3.9"
+
+[tool.openenv]
+entry_point = "env:BugReproEnv"
