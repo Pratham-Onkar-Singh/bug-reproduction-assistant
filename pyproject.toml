@@ -2,7 +2,7 @@
 name = "bug-reproduction-assistant"
 version = "0.1.0"
 description = "OpenEnv bug reproduction assistant"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "fastapi",
     "uvicorn",
