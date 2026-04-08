@@ -6,12 +6,11 @@ colorFrom: blue
 colorTo: purple
 sdk: docker
 tags:
-
-* openenv
-* qa
-* bug-reproduction
-* evaluation
-  pinned: false
+    - openenv
+    - qa
+    - bug-reproduction
+    - evaluation
+pinned: false
 
 ---
 
