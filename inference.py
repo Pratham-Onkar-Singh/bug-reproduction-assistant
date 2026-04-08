@@ -20,8 +20,10 @@ API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
 
 if not API_BASE_URL or not MODEL_NAME or not API_KEY:
     raise ValueError(
-        "Missing environment variables. Set: "
-        "API_BASE_URL, MODEL_NAME, and either OPENAI_API_KEY or HF_TOKEN"
+        "Missing environment variables. Set:\n"
+        "  - API_BASE_URL\n"
+        "  - MODEL_NAME\n"
+        "  - OPENAI_API_KEY or HF_TOKEN"
     )
 
 client = OpenAI(
@@ -46,8 +48,7 @@ def log_step(step, action, reward, done, error=None):
 def log_end(success, steps, score, rewards):
     rewards_str = ",".join(f"{r:.2f}" for r in rewards)
     print(
-        f"[END] success={str(success).lower()} "
-        f"steps={steps} score={score:.2f} rewards={rewards_str}",
+        f"[END] success={str(success).lower()} steps={steps} score={score:.3f} rewards={rewards_str}",
         flush=True
     )
 
